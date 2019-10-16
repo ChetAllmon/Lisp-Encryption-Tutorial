@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Encryption Tutorial </title>
+	</head>
+	<body>
+		<h1> The Caeser Cipher. </h1>
+		<p> <pre> The Caesar Cipher(CC) is a very old cipher. Although it is rather impractical for actual security, the Caesar Cipher(CC) is a very simple introduction to encryption and decryption. 
+			The basic use of the CC is to shift the letters of a message to the right in the alphabet.
+&nbsp;
+		In practice:
+##############
+		Message: "This is super secret" 
+
+		When encrypted with a shift of one(1) becomes 
+
+		Encrypted Message: "uijt jt tvqfs tfdsfu"
+
+		With a shift of one(1) each letter is shifted to the right once, A->B B->C C->D, ... Y->Z,Z->A,etc. This method of encrypting a message makes it very easy to decrypt, simply shift 					back whatever number you used as the shift to encrypt the message
+	
+		For a more in-depth explaination of the CC, as well as seeing an encrypter/decrypter program in action, you can visit http://practicalcryptography.com/ciphers/caesar-cipher/
+
+		While you can use whatever shift you desire, even past 26(alphabet size, though this is the same as using a smaller number, I.E 27 shifts is the same as 2 shifts) The shift of 13 is 					the most common, this shift is known as ROT13. However, our code will be able to use whatever shift number(key) the user desires to input.
+
+		</pre> </p>
+		
+	</body>
+</html>
+	

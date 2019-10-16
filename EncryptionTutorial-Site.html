@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Encryption Tutorial </title>
+	</head>
+	<body>
+		<h1> The Caeser Cipher. </h1>
+		<p> <pre> <font size="4.5">
+The Caesar Cipher(CC) is a very old cipher. Although it is rather impractical for actual security, the Caesar Cipher(CC) is a very simple introduction to encryption and decryption. 
+The basic use of the CC is to shift the letters of a message to the right in the alphabet. 
+
+In practice: 
+
+Message: "This is super secret" 
+
+When encrypted with a shift of one(1) becomes 
+
+Encrypted Message: "uijt jt tvqfs tfdsfu" 
+
+With a shift of one(1) each letter is shifted to the right once, A->B B->C C->D, ... Y->Z,Z->A,etc. 
+This method of encrypting a message makes it very easy to decrypt, simply shift back whatever number you used as the shift to encrypt the message.
+
+For a more in-depth explaination of the CC, as well as seeing an encrypter/decrypter program in action, you can visit http://practicalcryptography.com/ciphers/caesar-cipher/
+
+While you can use whatever shift you desire, even past 26(alphabet size, though this is the same as using a smaller number, I.E 27 shifts is the same as 2 shifts). <br>
+The shift of 13 is the most common, this shift is known as ROT13. However, our code will be able to use whatever shift number(key) the user desires to input.
+
+
+The simplest method of encoding a letter is to add the key to the letter itself. (+ "A" 1) However, we cannot add letters to numbers, so we must convert "A" to a number(int)
+We can use (string->int "A") to do this, the result is 65.
+(planning to add information about the acsii table here, to explain why A=65.
+So, with a key of 1, A becomes (+ 65 1) = 66. If we use (int->string 66) we get "B".
+now we can decode this letter, doing the opposite
+B to a number is 66, subtract the key, 65, 65 to a letter is "A".
+
+
+Show an encode-one-letter function, show a encrypt-one letter function and then put them together.
+
+Now we can do this in code.
+
+Code: 
+<font color="blue"> 
+(check-expect (encode-one-letter "A")   65)
+(check-expect (encode-one-letter "F")   70)
+(check-expect (encode-one-letter "Z")   90)
+
+(define (encode-one-letter letter) 
+  (string->int letter))
+
+(check-expect (encrypt-one-letter "A" 1) "B")
+(check-expect (encrypt-one-letter "F" 1) "G")
+(check-expect (encrypt-one-letter "Z" 1) "A") ;Throws an error, "A" is expected, returned "["
+
+(define (encrypt-one-letter letter key)
+  (int->string (+ (string->int letter) key)))
+</font>
+The above code works, however, if we try to change "Z", it does not go to "A" like we want. This is because of the ascii table. Z is 90 on the acsii table, And [ is 91.
+So we have to account for the loop around of the alphabet. We can do this using modulo, which returns the remainder of 2 numbers. (modulo 5 3) = 2
+Note that (modulo (0-25) 26) will return the number given (0-25) (modulo 20 26) = 20, etc. However (modulo 26 26) = 0; Which brings us back to "A".
+<font color="blue"> 
+(check-expect (encrypt-one-letter-with-modulo "A" 1) "B")
+(check-expect (encrypt-one-letter-with-modulo "F" 1) "G")
+(check-expect (encrypt-one-letter-with-modulo "Z" 1) "A") ;No error thrown!
+
+(define (encrypt-one-letter-with-modulo letter key)
+  (int->string (+ (string->int "A") (modulo (- (+ (string->int letter) key) (string->int "A")) 26))))
+</font>
+Note: we can simply replace (string->int "A") with 65, as we know the value, this saves the computer minimal processor power, but it mostly just clears up the code a bit.
+This is a matter of personal preference, if you prefer having the calculation to show where 65 came from feel free, you can also just add a comment to explain the 65.
+Ex:
+<font color="blue"> 
+;Origin of 65 in the following function: (string->int "A") = 65
+
+(define (encode-one-letter-with-modulo letter key)
+  (int->string (+ 65 (modulo (- (+ (string->int letter) key) 65) 26))))
+</font>                      
+
+
+
+		</pre> </p>
+		
+	</body>
+</html>
+	
