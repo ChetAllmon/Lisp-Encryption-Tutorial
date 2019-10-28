@@ -174,22 +174,21 @@
 (define key 10)
 
 (random-seed key)
-(random 26)
-(random 26)
-(random 26)
 
 
-(random-seed key)
-(random 26)
-(random 26)
-(random 26)
+(define lock (random 26))
 
 
+(check-expect (encode-char "B") "E")
+(check-expect (decode-char "E") "B")
 
-(check-expect (encode-char "B" 26) 66)
+(define (encode-char char)
+  (int->string (+ (string->int "A") (modulo (- (+ (string->int char) lock) (string->int "A")) 26))))
 
-(define (encode-char char key)
-  (- (string->int char) (random-seed key)))
+(random-seed key) ;resets the random number generator
+
+(define (decode-char char)
+  (int->string (+ (string->int "A") (modulo (- (- (string->int char) lock) (string->int "A")) 26))))
 
 
 ;----An Introduction to Anonymous Functions----
