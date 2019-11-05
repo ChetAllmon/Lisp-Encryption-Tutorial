@@ -12,6 +12,62 @@
 
 ; Look up streams-library
 
+;Simple way of doing the cipher
+(define alphabet "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+;Purpose: Convert a string to an integer
+;Signature: String -> Number
+;Examples:
+;65-90
+;0-65
+(check-expect (encode "A") 0)
+(check-expect (encode "B") 1)
+(check-expect (encode "Z") 25)
+;Code
+(define (encode letter)
+  (- (string->int letter) 65)
+  )
+
+; Purpose : Caesar Encrypt Message, 
+; Signature : String String -> String
+; Example :
+(check-expect (caesar-encrypt "B" "A") "B")
+(check-expect (caesar-encrypt "B" "C") "D")
+(check-expect (caesar-encrypt "B" "Z") "A")
+(check-expect (caesar-encrypt "C" "A") "C")
+(check-expect (caesar-encrypt "C" "B") "D")
+;Stub
+;(define (caesar-encrypt key letter) -1)
+;Template; 
+(define (caesar-encrypt key letter)
+  (if (< (+ (encode key) (encode letter)) 25) 
+      (string-ith alphabet (+ (encode key) (encode letter)))
+      (string-ith alphabet (- (+ (encode key) (encode letter)) 26))
+      )
+  )
+
+; Purpose: Encrypt an entire message (String with multiple letters)
+; Signature: String List -> List
+; Examples:
+(check-expect (caesar-encrypt-message "B" (list)) (list))
+(check-expect (caesar-encrypt-message "B" (list "A" "C" "Z")) (list "B" "D" "A"))
+; Stub:
+; (define (caesar-encrypt-message key lst) -1)
+; Code :
+(define (caesar-encrypt-message key lst)
+  (if (empty? lst)
+      (list)
+      (append (list (caesar-encrypt key (first lst)))
+              (caesar-encrypt-message key (rest lst))
+              )
+      )
+  )
+
+(implode (caesar-encrypt-message "B" (explode "HELLO")))
+
+(caesar-encrypt-message "N" (list "A" "B" "C"))
+(caesar-encrypt-message "N" (caesar-encrypt-message "N" (list "A" "B" "C")))
+(caesar-encrypt-message "B" (list "A" "B" "C"))
+
 ;Plan
 ; 1: Introduce Caeser Cipher
 ; Use numbers for the key
@@ -143,21 +199,19 @@
   (lambda(letter) (int->string (+ (string->int "A") (modulo (- (+ (string->int letter) key) (string->int "A")) 26)))))
 
 (define (encrypt-message message key)
-;Note: you can put whatever you want |right here    | ex. "A" "G"...etc or as is (explode message)
-             (implode (map (encode-character-function key) (explode message))))
+  (implode (map (encode-character-function key) (explode message))))
 
 
 (encrypt-message "HELLO" 1)
 
 
 
-(define (decode-character key)
+(define (decode-character-function key)
   (lambda(letter) (int->string (+ (string->int "A") (modulo (+ (- (string->int letter) key) (string->int "A")) 26)))))
  
 (define (decrypt-message message key)
-;Note: you can put whatever you want |right here    | ex. "A" "G"...etc or as is (explode message)
-             (implode (map (decode-character key) (explode message))))
-                                                                       
+  (implode (map (decode-character-function key) (explode message))))
+
 
 
 (decrypt-message "IFMMP" 1) 
@@ -169,7 +223,7 @@
 ; give the user the ability to enter the seed.
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-;possiblely create a random number generator, donald knuth "The art of computer programming"
+;maybe create a random number generator, donald knuth "The art of computer programming"
 ;sequential block
 (define key 10)
 
@@ -178,17 +232,42 @@
 
 (define lock (random 26))
 
+lock ; This gives the value (key) to shift the messages characters by. 
 
 (check-expect (encode-char "B") "E")
 (check-expect (decode-char "E") "B")
 
+
 (define (encode-char char)
   (int->string (+ (string->int "A") (modulo (- (+ (string->int char) lock) (string->int "A")) 26))))
 
-(random-seed key) ;resets the random number generator
-
 (define (decode-char char)
   (int->string (+ (string->int "A") (modulo (- (- (string->int char) lock) (string->int "A")) 26))))
+
+
+
+(check-expect ((encode-char-function) "A") "D") 
+
+(define (encode-char-function)
+  (lambda(letter) (int->string (+ (string->int "A") (modulo (- (+ (string->int letter) lock) (string->int "A")) 26)))))
+
+(define (encrypt-message-rand message)
+  (implode (map (encode-char-function) (explode message))))
+
+
+(encrypt-message-rand "HELLO")
+
+(check-expect ((decode-char-function) "D") "A") 
+
+(define (decode-char-function)
+  (lambda(letter) (int->string (+ (string->int "A") (modulo (+ (- (string->int letter) lock) (string->int "A")) 26)))))
+ 
+(define (decrypt-message-rand message)
+  (implode (map (decode-char-function) (explode message))))
+
+
+
+(decrypt-message-rand "KHOOR") 
 
 
 ;----An Introduction to Anonymous Functions----
