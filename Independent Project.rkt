@@ -7,72 +7,8 @@
 ;intuit, java,javascript
 ;ruby on rails-web development
 ;thought stem, racket-lisp
-
-
-
 ; Look up streams-library
 
-;Simple way of doing the cipher
-(define alphabet "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-;Purpose: Convert a string to an integer
-;Signature: String -> Number
-;Examples:
-;65-90
-;0-65
-(check-expect (encode "A") 0)
-(check-expect (encode "B") 1)
-(check-expect (encode "Z") 25)
-;Code
-(define (encode letter)
-  (- (string->int letter) 65)
-  )
-
-; Purpose : Caesar Encrypt Message, 
-; Signature : String String -> String
-; Example :
-(check-expect (caesar-encrypt "B" "A") "B")
-(check-expect (caesar-encrypt "B" "C") "D")
-(check-expect (caesar-encrypt "B" "Z") "A")
-(check-expect (caesar-encrypt "C" "A") "C")
-(check-expect (caesar-encrypt "C" "B") "D")
-;Stub
-;(define (caesar-encrypt key letter) -1)
-;Template; 
-(define (caesar-encrypt key letter)
-  (if (< (+ (encode key) (encode letter)) 25) 
-      (string-ith alphabet (+ (encode key) (encode letter)))
-      (string-ith alphabet (- (+ (encode key) (encode letter)) 26))
-      )
-  )
-
-; Purpose: Encrypt an entire message (String with multiple letters)
-; Signature: String List -> List
-; Examples:
-(check-expect (caesar-encrypt-message "B" (list)) (list))
-(check-expect (caesar-encrypt-message "B" (list "A" "C" "Z")) (list "B" "D" "A"))
-; Stub:
-; (define (caesar-encrypt-message key lst) -1)
-; Code :
-(define (caesar-encrypt-message key lst)
-  (if (empty? lst)
-      (list)
-      (append (list (caesar-encrypt key (first lst)))
-              (caesar-encrypt-message key (rest lst))
-              )
-      )
-  )
-
-(implode (caesar-encrypt-message "B" (explode "HELLO")))
-
-(caesar-encrypt-message "N" (list "A" "B" "C"))
-(caesar-encrypt-message "N" (caesar-encrypt-message "N" (list "A" "B" "C")))
-(caesar-encrypt-message "B" (list "A" "B" "C"))
-
-;Plan
-; 1: Introduce Caeser Cipher
-; Use numbers for the key
-; Using a general encryption function
-; Functions: encode-letter, decode-letter, encrypt-letter, decrypt-letter.
 
 ;Explain the caeser cipher
 
@@ -97,18 +33,16 @@
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-;Will update this to be better psuedo code/explainations
-
 ;The simplest method of encoding a letter is to add the key to the letter itself. (+ "A" 1) However, we cannot add letters to numbers, so we must convert "A" to a number(int)
 ;We can use (string->int "A") to do this, the result is 65.
 ;(planning to add information about the acsii table here, to explain why A=65.
 ;So, with a key of 1, A becomes (+ 65 1) = 66. If we use (int->string 66) we get "B".
 ;now we can decode this letter, doing the opposite
 ; B to a number is 66, subtract the key, 65, 65 to a letter is "A".
-
-
-;Show an encode-one-letter function, show a encrypt-one letter function and then put them together
-
+;
+;
+;
+;
 ;Now we can do this in code
 ;Code
 
@@ -171,22 +105,6 @@
   (int->string (+ (string->int "A") (modulo (- (- (string->int letter) key) (string->int "A")) 26))))
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-; 2: How to encrypt a String = list of 1String
-
-;Perhaps show method of doing it without lambda/currying...from old project.
-
-
-
-; Cannot use the general encryption function on a list with map because it uses two paramaters
-; Introduce lambda, map, then currying
-; a. Create function to use with map
-; b. Introduce lambda as a concept
-; c. Use a lambda with map
-; d. Use lambda with general encrypt-letter using currying to create a function that can be used with map.
-; e. Put the whole thing together...
-
-;Explaining a,b,c, here.
-
 
 ;Step2-Putting it all together
 ;Code:
@@ -196,7 +114,7 @@
 (check-expect ((encode-character-function 1) "A") "B") 
 
 (define (encode-character-function key)
-  (lambda(letter) (int->string (+ (string->int "A") (modulo (- (+ (string->int letter) key) (string->int "A")) 26)))))
+  (lambda(letter) (encrypt-one-letter-with-modulo letter key)))
 
 (define (encrypt-message message key)
   (implode (map (encode-character-function key) (explode message))))
@@ -204,10 +122,8 @@
 
 (encrypt-message "HELLO" 1)
 
-
-
 (define (decode-character-function key)
-  (lambda(letter) (int->string (+ (string->int "A") (modulo (+ (- (string->int letter) key) (string->int "A")) 26)))))
+  (lambda(letter) (decrypt-one-letter-with-modulo letter key)))
  
 (define (decrypt-message message key)
   (implode (map (decode-character-function key) (explode message))))
@@ -225,31 +141,41 @@
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;maybe create a random number generator, donald knuth "The art of computer programming"
 ;sequential block
-(define key 10)
+(define key 37) ;Could also be (random 100000000000000) or something instead of 37 to make it more random.
 
 (random-seed key)
 
+(define (shift) ;not a pure function
+  (random 26)) ;new number each time
 
-(define lock (random 26))
+(shift) ; This gives the value (key) to shift the messages characters by. 
+(shift)
+(shift)
+(shift)
+(random-seed key) ;Resets the seed
+;Note the same sequence of values
+(shift)
+(shift)
+(shift)
+(shift)
 
-lock ; This gives the value (key) to shift the messages characters by. 
-
+(random-seed key) ;Resets the seed
 (check-expect (encode-char "B") "E")
 (check-expect (decode-char "E") "B")
 
 
 (define (encode-char char)
-  (int->string (+ (string->int "A") (modulo (- (+ (string->int char) lock) (string->int "A")) 26))))
+  (int->string (+ (string->int "A") (modulo (- (+ (string->int char) (shift)) (string->int "A")) 26))))
 
 (define (decode-char char)
-  (int->string (+ (string->int "A") (modulo (- (- (string->int char) lock) (string->int "A")) 26))))
+  (int->string (+ (string->int "A") (modulo (- (- (string->int char) (shift)) (string->int "A")) 26))))
 
 
 
 (check-expect ((encode-char-function) "A") "D") 
 
 (define (encode-char-function)
-  (lambda(letter) (int->string (+ (string->int "A") (modulo (- (+ (string->int letter) lock) (string->int "A")) 26)))))
+  (lambda(letter) (int->string (+ (string->int "A") (modulo (- (+ (string->int letter) (shift)) (string->int "A")) 26)))))
 
 (define (encrypt-message-rand message)
   (implode (map (encode-char-function) (explode message))))
@@ -257,18 +183,22 @@ lock ; This gives the value (key) to shift the messages characters by.
 
 (encrypt-message-rand "HELLO")
 
+(random-seed key)
+
 (check-expect ((decode-char-function) "D") "A") 
 
 (define (decode-char-function)
-  (lambda(letter) (int->string (+ (string->int "A") (modulo (+ (- (string->int letter) lock) (string->int "A")) 26)))))
+  (lambda(letter) (int->string (+ (string->int "A") (modulo (+ (- (string->int letter) (shift)) (string->int "A")) 26)))))
  
 (define (decrypt-message-rand message)
   (implode (map (decode-char-function) (explode message))))
 
 
 
-(decrypt-message-rand "KHOOR") 
+(decrypt-message-rand "TTVCK")
 
+; Lambdas:
+; Explain Lambdas
 
 ;----An Introduction to Anonymous Functions----
 
@@ -305,52 +235,9 @@ lock ; This gives the value (key) to shift the messages characters by.
 
 
 
-;(define (myfunction a b c)
-;  42
-;  )
-; 
-;(define (make-multiply-function constant)
-;  (lambda (x) (* constant x))
-;  )
-;
-;(define f (make-multiply-function 17))
-;(define g (make-multiply-function 27))
-;
-;(define a-list (list 1 2 3))
-;
-;(map f a-list)
-;(map g a-list)
-;
-;(define (make-encryption-function key)
-;  (λ(x) (+ x key)
-;    )
-;  )
-;
-;(define (make-decryption-function key)
-;    (λ(x) (- x key)
-;    )
-;  )
-;
-;
-;(define (encrypt letter key)
-;  (modulo (+ letter key) 25)
-;  )
-;
-;;; Currying: turn a general function 
-;(define (make-encrypt-letter-function key)
-;  (lambda(letter) (encrypt letter key))
-;  )
-;
-;(map (make-encrypt-letter-function 13) (list 104 101))
-;
-;
-;
-;(map string->int (explode "hello"))
-;(map (make-encryption-function 13) (map string->int (explode "hello")))
-;(map int->string (map (make-encryption-function 13) (map string->int (explode "hello"))))
-;(implode (map int->string (map (make-encryption-function 3) (map string->int (explode "hello world")))))
-;
-;(implode (map int->string (map (make-decryption-function 3) (map string->int (explode "uryy|-\u0084|\u007Fyq")))))
+
+; Currying:
+;Explain Currying here
 
 
 ;Plan
