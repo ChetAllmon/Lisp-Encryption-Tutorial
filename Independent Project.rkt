@@ -1,3 +1,5 @@
+;Lisp Encryption Tutorial by Chet Allmon is licensed under a Creative Commons Attribution 4.0 International License.
+
 (require racket)
 
 ;Simple way of doing the cipher
