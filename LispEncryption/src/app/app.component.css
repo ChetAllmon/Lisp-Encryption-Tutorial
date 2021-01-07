@@ -1,0 +1,60 @@
+.titleBar{
+    background-color: azure;
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.headers{
+    text-align: center;
+    font-size: 30px;
+    margin: 20px 0px 20px 0px;
+    text-decoration: underline;
+}
+
+.article{
+    display: block;
+    background-color: lightgray;
+    margin: 0 auto;
+    height: 70%;
+    width: 80%;
+
+    text-align: left;
+    font-size: 20px;
+
+    border: solid;
+    border-width: 2px;
+    border-radius: 2px;
+    border-color: black;
+}
+
+.text{
+    margin-left: 5px;
+    color: black;
+    white-space: pre-wrap;
+}
+
+.examples{
+    background-color: lightyellow;
+}
+
+#rotationLock{
+    
+    background:orange;
+    height: 50%;
+    width: 50%;
+}
+
+.rotationLockBoxes{
+    display: inline-block;
+    background-color: black;
+    border: 2px solid red;
+    height: 35px;
+    width: 40px;
+    margin: 0px 5px 0px 0px;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
